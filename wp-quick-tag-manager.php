@@ -63,7 +63,7 @@ class Quick_Tag_Manager {
 	 * @since   1.0.0
 	 */
 	public function create_table () {
-		$db = new Posted_Display_Admin_Db( $this->text_domain );
+		$db = new Quick_Tag_Manager_Admin_Db();
 		$db->create_table();
 	}
 
@@ -74,7 +74,7 @@ class Quick_Tag_Manager {
 	 * @since   1.0.0
 	 */
 	public function plugins_loaded () {
-		load_plugin_textdomain( $this->text_domain, false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+		//load_plugin_textdomain( $this->text_domain, false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 	}
 
 	/**
