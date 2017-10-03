@@ -144,7 +144,7 @@ class Quick_Tag_Manager {
 	 * @since   1.0.0
 	 */
 	public function add_style () {
-		wp_enqueue_style( 'wp-posted-display-admin-style' );
+		wp_enqueue_style( 'wp-quick-tag-manager-admin-style' );
 	}
 
 	/**
