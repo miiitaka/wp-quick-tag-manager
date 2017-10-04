@@ -63,7 +63,7 @@ class Quick_Tag_Manager {
 	 * @since   1.0.0
 	 */
 	public function create_table () {
-		$db = new Posted_Display_Admin_Db( $this->text_domain );
+		$db = new Quick_Tag_Manager_Admin_Db();
 		$db->create_table();
 	}
 
@@ -74,7 +74,7 @@ class Quick_Tag_Manager {
 	 * @since   1.0.0
 	 */
 	public function plugins_loaded () {
-		load_plugin_textdomain( $this->text_domain, false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+		//load_plugin_textdomain( $this->text_domain, false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 	}
 
 	/**
@@ -144,7 +144,7 @@ class Quick_Tag_Manager {
 	 * @since   1.0.0
 	 */
 	public function add_style () {
-		wp_enqueue_style( 'wp-posted-display-admin-style' );
+		wp_enqueue_style( 'wp-quick-tag-manager-admin-style' );
 	}
 
 	/**
@@ -155,7 +155,7 @@ class Quick_Tag_Manager {
 	 */
 	public function list_page_render () {
 		require_once( plugin_dir_path( __FILE__ ) . 'includes/wp-quick-tag-manager-admin-list.php' );
-		new Posted_Display_Admin_List( $this->text_domain );
+		new Quick_Tag_Manager_Admin_List( $this->text_domain );
 	}
 
 	/**
@@ -166,6 +166,6 @@ class Quick_Tag_Manager {
 	 */
 	public function post_page_render () {
 		require_once( plugin_dir_path( __FILE__ ) . 'includes/wp-quick-tag-manager-admin-post.php' );
-		new Posted_Display_Admin_Post( $this->text_domain );
+		new Quick_Tag_Manager_Admin_Post( $this->text_domain );
 	}
 }
