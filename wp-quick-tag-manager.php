@@ -155,7 +155,7 @@ class Quick_Tag_Manager {
 	 */
 	public function list_page_render () {
 		require_once( plugin_dir_path( __FILE__ ) . 'includes/wp-quick-tag-manager-admin-list.php' );
-		new Posted_Display_Admin_List( $this->text_domain );
+		new Quick_Tag_Manager_Admin_List( $this->text_domain );
 	}
 
 	/**
@@ -166,6 +166,6 @@ class Quick_Tag_Manager {
 	 */
 	public function post_page_render () {
 		require_once( plugin_dir_path( __FILE__ ) . 'includes/wp-quick-tag-manager-admin-post.php' );
-		new Posted_Display_Admin_Post( $this->text_domain );
+		new Quick_Tag_Manager_Admin_Post( $this->text_domain );
 	}
 }
