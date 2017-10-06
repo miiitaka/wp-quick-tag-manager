@@ -46,8 +46,8 @@ class Quick_Tag_Manager_Admin_Db {
 			$query .= " (id mediumint(9) NOT NULL AUTO_INCREMENT PRIMARY KEY";
 			$query .= ",html_id tinytext NOT NULL";
 			$query .= ",display tinytext NOT NULL";
-			$query .= ",args1 text NOT NULL";
-			$query .= ",args2 text";
+			$query .= ",arg1 text NOT NULL";
+			$query .= ",arg2 text";
 			$query .= ",access_key tinytext";
 			$query .= ",title tinytext";
 			$query .= ",priority int";
@@ -85,12 +85,17 @@ class Quick_Tag_Manager_Admin_Db {
 	 *
 	 * @version 1.0.0
 	 * @since   1.0.0
+	 * @param   string $activate
 	 * @return  array  $results
 	 */
-	public function get_list_options () {
+	public function get_list_options ( $activate = '' ) {
 		global $wpdb;
 
-		$prepared = "SELECT * FROM " . $this->table_name . " ORDER BY update_date DESC";
+		$prepared  = "SELECT * FROM " . $this->table_name;
+		if ( $activate === 'on' ) {
+			$prepared .= " WHERE activate = 'on'";
+		}
+		$prepared .= " ORDER BY id ASC";
 
 		return (array) $wpdb->get_results( $prepared );
 	}
@@ -109,8 +114,8 @@ class Quick_Tag_Manager_Admin_Db {
 		$data = array(
 			'html_id'       => $post['html_id'],
 			'display'       => $post['display'],
-			'args1'         => $post['args1'],
-			'args2'         => $post['args2'],
+			'arg1'          => $post['arg1'],
+			'arg2'          => $post['arg2'],
 			'access_key'    => $post['access_key'],
 			'title'         => $post['title'],
 			'priority'      => $post['priority'],
@@ -150,8 +155,8 @@ class Quick_Tag_Manager_Admin_Db {
 		$data = array(
 			'html_id'       => $post['html_id'],
 			'display'       => $post['display'],
-			'args1'         => $post['args1'],
-			'args2'         => $post['args2'],
+			'arg1'          => $post['arg1'],
+			'arg2'          => $post['arg2'],
 			'access_key'    => $post['access_key'],
 			'title'         => $post['title'],
 			'priority'      => $post['priority'],
