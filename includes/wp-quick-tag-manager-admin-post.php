@@ -5,16 +5,34 @@
  * @author  Kazuya Takami
  * @version 1.0.0
  * @since   1.0.0
+ * @see     wp-quick-tag-manager-admin-db.php
  */
 class Quick_Tag_Manager_Admin_Post {
 
 	/**
-	 * Variable definition.
+	 * Variable definition Text Domain.
 	 *
 	 * @version 1.0.0
 	 * @since   1.0.0
 	 */
 	private $text_domain;
+
+	/**
+	 * Variable definition Key Name.
+	 *
+	 * @version 1.0.0
+	 * @since   1.0.0
+	 */
+	private $key_name = 'quick_tag_manager_id';
+
+	/**
+	 * Defined nonce.
+	 *
+	 * @version 1.0.0
+	 * @since   1.0.0
+	 */
+	private $nonce_name;
+	private $nonce_action;
 
 	/**
 	 * Constructor Define.
@@ -25,6 +43,8 @@ class Quick_Tag_Manager_Admin_Post {
 	 */
 	public function __construct ( $text_domain ) {
 		$this->text_domain = $text_domain;
+		$this->nonce_name   = "_wpnonce_" . $text_domain;
+		$this->nonce_action = "edit-"     . $text_domain;
 
 		/**
 		 * Update Status
@@ -38,31 +58,34 @@ class Quick_Tag_Manager_Admin_Post {
 
 		/** Set Default Parameter for Array */
 		$options = array(
-			'html_id'       => '',
-			'display'       => '',
-			'args1'         => '',
-			'args2'         => '',
-			'access_key'    => '',
-			'title'         => '',
-			'priority'      => '',
-			'instance'      => '',
-			'activate'      => 'on'
+			'id'         => '',
+			'html_id'    => '',
+			'display'    => '',
+			'arg1'       => '',
+			'arg2'       => '',
+			'access_key' => '',
+			'title'      => '',
+			'priority'   => '',
+			'instance'   => '',
+			'activate'   => 'on'
 		);
 
 		/** Key Set */
-		if ( isset( $_GET['quick_tag_manager_id'] ) && is_numeric( $_GET['quick_tag_manager_id'] ) ) {
-			$options['id'] = esc_html( $_GET['quick_tag_manager_id'] );
+		if ( isset( $_GET[$this->key_name] ) && is_numeric( $_GET[$this->key_name] ) ) {
+			$options['id'] = esc_html( $_GET[$this->key_name] );
 		}
 
 		/** DataBase Update & Insert Mode */
-		if ( isset( $_POST['quick_tag_manager_id'] ) && is_numeric( $_POST['quick_tag_manager_id'] ) ) {
-			$db->update_options( $_POST );
-			$options['id'] = $_POST['quick_tag_manager_id'];
-			$status = "ok";
-		} else {
-			if ( isset( $_POST['quick_tag_manager_id'] ) && $_POST['quick_tag_manager_id'] === '' ) {
-				$options['id'] = $db->insert_options( $_POST );
-				$status = "ok";
+		if ( ! empty( $_POST ) && check_admin_referer( $this->nonce_action, $this->nonce_name ) ) {
+			if ( isset( $_POST[ $this->key_name ] ) && is_numeric( $_POST[ $this->key_name ] ) ) {
+				$db->update_options( $_POST );
+				$options['id'] = $_POST[ $this->key_name ];
+				$status        = "ok";
+			} else {
+				if ( isset( $_POST[ $this->key_name ] ) && $_POST[ $this->key_name ] === '' ) {
+					$options['id'] = $db->insert_options( $_POST );
+					$status        = "ok";
+				}
 			}
 		}
 
@@ -71,32 +94,13 @@ class Quick_Tag_Manager_Admin_Post {
 			$options = $db->get_options( $options['id'] );
 		}
 
-		$this->set_custom_post();
 		$this->page_render( $options, $status );
-	}
-
-	/**
-	 * Setting custom post array.
-	 *
-	 * @version 2.0.0
-	 * @since   2.0.0
-	 */
-	private function set_custom_post () {
-		$args = array(
-			'public'   => true,
-			'_builtin' => false
-		);
-		$post_types = get_post_types( $args, 'objects' );
-
-		foreach ( $post_types as $post_type ) {
-			$this->type_args[] = $post_type->name;
-		}
 	}
 
 	/**
 	 * Setting Page of the Admin Screen.
 	 *
-	 * @version 2.0.6
+	 * @version 1.0.0
 	 * @since   1.0.0
 	 * @param   array  $options
 	 * @param   string $status
@@ -104,7 +108,7 @@ class Quick_Tag_Manager_Admin_Post {
 	private function page_render ( array $options, $status ) {
 		$html  = '';
 		$html .= '<div class="wrap">';
-		$html .= '<h1>' . esc_html__( 'Posted Display Settings', $this->text_domain ) . '</h1>';
+		$html .= '<h1>' . esc_html__( 'Quick Tag Manager Settings', $this->text_domain ) . '</h1>';
 		echo $html;
 
 		switch ( $status ) {
@@ -117,103 +121,56 @@ class Quick_Tag_Manager_Admin_Post {
 
 		$html  = '<hr>';
 		$html .= '<form method="post" action="">';
-		$html .= '<input type="hidden" name="quick_tag_manager_id" value="' . esc_attr( $options['id'] ) . '">';
+		$html .= '<input type="hidden" name="' . $this->key_name . '" value="' . esc_attr( $options['id'] ) . '">';
 		echo $html;
 
-		/** Common settings */
-		$html  = '<table class="wp-posted-display-admin-table">';
-		$html .= '<caption>' . esc_html__( 'Common settings', $this->text_domain ) . '</caption>';
-		$html .= '<tr><th><label for="template_name">' . esc_html__( 'Template Name', $this->text_domain ) . ':</label></th><td>';
-		$html .= '<input type="text" name="template_name" id="template_name" class="regular-text" required autofocus value="';
-		$html .= esc_attr( $options['template_name'] ) . '">';
-		$html .= '</td></tr>';
-		$html .= '<tr><th><label for="wp-posted-display-type">' . esc_html__( 'Type', $this->text_domain ) . ':</label></th><td>';
-		$html .= '<select name="type" id="wp-posted-display-type">';
-		foreach ( $this->type_args as $value ) {
-			$html .= '<option value="' . $value . '"';
-			$html .= ( $options['type'] === $value ) ? ' selected=selected' : '';
-			$html .= '>' . $value;
-		}
-		$html .= '</select>';
-		$html .= '</td></tr>';
-		$html .= '<tr><th><label for="template">' . esc_html__( 'Template', $this->text_domain ) . ':</label></th><td>';
-		$html .= '<p>';
-		$html .= esc_html__( 'Child elements of the li element is markup.', $this->text_domain ) . '<br>';
-		$html .= esc_html__( 'Date, post title, post summary, tags, categories, author name, you can view the featured image.', $this->text_domain ) . '<br>';
-		$html .= esc_html__( 'Please set as "##item##" the items to be displayed.', $this->text_domain );
-		$html .= '</p>';
-		$html .= '<p id="template_item">';
-		$html .= '<span>##date##</span>';
-		$html .= '<span>##title##</span>';
-		$html .= '<span>##summary##</span>';
-		$html .= '<span>##image##</span>';
-		$html .= '<span>##link##</span>';
-		$html .= '<span>##tag##</span>';
-		$html .= '<span>##category##</span>';
-		$html .= '<span>##author_name##</span>';
-		$html .= '</p>';
-		$html .= '<textarea name="template" id="template" rows="10" cols="50" class="large-text code">' . $template = str_replace( '\\', '', $options['template'] ) . '</textarea>';
-		$html .= '</td></tr>';
-		$html .= '<tr><th><label for="template_no_image">' . esc_html__( 'No Image Path', $this->text_domain ) . ':</label></th><td>';
-		$html .= '<input type="text" name="template_no_image" id="template_no_image" class="regular-text" value="';
-		$html .= esc_attr( $options['template_no_image'] ) . '">';
-		$html .= '<button id="media-upload" class="schema-admin-media-button dashicons-before dashicons-admin-media"><span>Add Media</span></button>';
-		$html .= '<p>' . esc_html__( 'It specifies the posts of Alternative Image path that does not set the featured image.', $this->text_domain ) . '</p>';
-		$html .= '</td></tr>';
-		$html .= '</table>';
-		echo $html;
+		wp_nonce_field( $this->nonce_action, $this->nonce_name );
 
-		$html  = '<table class="wp-posted-display-admin-table" id="wp-posted-display-type-cookie">';
-		$html .= '<caption>' . esc_html__( 'Type: Cookie settings', $this->text_domain ) . '</caption>';
-		$html .= '<tr><th><label for="save_term">' . esc_html__( 'Save Term', $this->text_domain ) . ':</label></th><td>';
-		$html .= '<input type="number" name="save_term" id="save_term" required class="small-text" min="1" max="30" value="';
-		$html .= esc_attr( $options['save_term'] ) . '">' . esc_html__( 'day', $this->text_domain );
-		$html .= '</td></tr>';
-		$html .= '<tr><th><label for="save_item">' . esc_html__( 'Save Item', $this->text_domain ) . ':</label></th><td>';
-		$html .= '<input type="number" name="save_item" id="save_item" required class="small-text" min="1" max="30" value="';
-		$html .= esc_attr( $options['save_item'] ) . '">' . esc_html__( 'item', $this->text_domain );
-		$html .= '</td></tr>';
-		$html .= '</table>';
-		echo $html;
+		$html  = '<table class="quick-tag-manager-table">';
 
-		$html  = '<table class="wp-posted-display-admin-table" id="wp-posted-display-type-categories">';
-		$html .= '<caption>' . esc_html__( 'Type: Category settings', $this->text_domain ) . '</caption>';
-		$html .= '<tr><th><label for="categories_output_data">' . esc_html__( 'Output Category ID', $this->text_domain ) . ':</label></th><td>';
-		$html .= '<input type="text" name="categories_output_data" id="categories_output_data" class="regular-text" placeholder="e.g. 1,2,3" value="';
-		$html .= esc_attr( $options['output_data'] );
-		$html .= '">';
-		$html .= '</td></tr>';
-		$html .= '</table>';
-		echo $html;
+		$html .= '<tr><th>Enabled : </th><td>';
+		$html .= '<input type="checkbox" name="activate" value="on"';
+		$html .= ( isset( $options['activate'] ) && $options['activate'] === "on" ) ? ' checked' : '';
+		$html .= '></td></tr>';
 
-		$html  = '<table class="wp-posted-display-admin-table" id="wp-posted-display-type-tags">';
-		$html .= '<caption>' . esc_html__( 'Type: Tag settings', $this->text_domain ) . '</caption>';
-		$html .= '<tr><th><label for="tags_output_data">' . esc_html__( 'Output Tag ID', $this->text_domain ) . ':</label></th><td>';
-		$html .= '<input type="text" name="tags_output_data" id="tags_output_data" class="regular-text" placeholder="e.g. 1,2,3" value="';
-		$html .= esc_attr( $options['output_data'] );
-		$html .= '">';
+		$html .= '<tr><th class="require"><label for="html_id">' . esc_html__( 'ID attribute name', $this->text_domain ) . ':</label></th><td>';
+		$html .= '<input type="text" name="html_id" id="html_id" class="regular-text" required autofocus maxlength="100" value="';
+		$html .= esc_attr( $options['html_id'] ) . '">';
 		$html .= '</td></tr>';
-		$html .= '</table>';
-		echo $html;
 
-		$html  = '<table class="wp-posted-display-admin-table" id="wp-posted-display-type-users">';
-		$html .= '<caption>' . esc_html__( 'Type: User settings', $this->text_domain ) . '</caption>';
-		$html .= '<tr><th><label for="users_output_data">' . esc_html__( 'Output User ID', $this->text_domain ) . ':</label></th><td>';
-		$html .= '<input type="text" name="users_output_data" id="users_output_data" class="regular-text" placeholder="e.g. 1,2,3" value="';
-		$html .= ( $options['type'] === 'Users') ? esc_attr( $options['output_data'] ) : '';
-		$html .= '">';
+		$html .= '<tr><th class="require"><label for="display">' . esc_html__( 'Button value', $this->text_domain ) . ':</label></th><td>';
+		$html .= '<input type="text" name="display" id="display" class="regular-text" required maxlength="100" value="';
+		$html .= esc_attr( $options['display'] ) . '">';
 		$html .= '</td></tr>';
-		$html .= '</table>';
-		echo $html;
 
-		$html  = '<table class="wp-posted-display-admin-table" id="wp-posted-display-type-posts">';
-		$html .= '<caption>' . esc_html__( 'Type: Posts settings', $this->text_domain ) . '</caption>';
-		$html .= '<tr><th><label for="posts_output_data">' . esc_html__( 'Output Posts ID', $this->text_domain ) . ':</label></th><td>';
-		$html .= '<input type="text" name="posts_output_data" id="posts_output_data" class="regular-text" placeholder="e.g. 1,2,3" value="';
-		$html .= esc_attr( $options['output_data'] );
-		$html .= '">';
-		$html .= '<p>' . esc_html__( 'Ignore post__in if you do not set it.', $this->text_domain ) . '</p>';
+		$html .= '<tr><th class="require"><label for="arg1">' . esc_html__( 'Starting Tag', $this->text_domain ) . ':</label></th><td>';
+		$html .= '<textarea name="arg1" id="arg1" rows="10" cols="50" class="large-text code" maxlength="1000" required>' . $options['arg1'] . '</textarea>';
 		$html .= '</td></tr>';
+
+		$html .= '<tr><th><label for="arg2">' . esc_html__( 'Ending Tag', $this->text_domain ) . ':</label></th><td>';
+		$html .= '<textarea name="arg2" id="arg2" rows="10" cols="50" class="large-text code" maxlength="1000">' . $options['arg2'] . '</textarea>';
+		$html .= '</td></tr>';
+
+		$html .= '<tr><th><label for="access_key">' . esc_html__( 'Access key', $this->text_domain ) . ':</label></th><td>';
+		$html .= '<input type="text" name="access_key" id="access_key" class="regular-text" maxlength="50" value="';
+		$html .= esc_attr( $options['access_key'] ) . '">';
+		$html .= '</td></tr>';
+
+		$html .= '<tr><th><label for="title">' . esc_html__( 'HTML button title', $this->text_domain ) . ':</label></th><td>';
+		$html .= '<input type="text" name="title" id="title" class="regular-text" maxlength="100" value="';
+		$html .= esc_attr( $options['title'] ) . '">';
+		$html .= '</td></tr>';
+
+		$html .= '<tr><th><label for="priority">' . esc_html__( 'Priority', $this->text_domain ) . ':</label></th><td>';
+		$html .= '<input type="number" name="priority" id="priority" class="regular-text" maxlength="100" value="';
+		$html .= esc_attr( $options['priority'] ) . '">';
+		$html .= '</td></tr>';
+
+		$html .= '<tr><th><label for="instance">' . esc_html__( 'Instance', $this->text_domain ) . ':</label></th><td>';
+		$html .= '<input type="text" name="instance" id="instance" class="regular-text" maxlength="100" value="';
+		$html .= esc_attr( $options['instance'] ) . '">';
+		$html .= '</td></tr>';
+
 		$html .= '</table>';
 		echo $html;
 
@@ -231,9 +188,9 @@ class Quick_Tag_Manager_Admin_Post {
 	 */
 	private function information_render () {
 		$html  = '<div id="message" class="updated notice notice-success is-dismissible below-h2">';
-		$html .= '<p>Posted Display Information Update.</p>';
+		$html .= '<p>Quick Tag Manager Information Update.</p>';
 		$html .= '<button type="button" class="notice-dismiss">';
-		$html .= '<span class="screen-reader-text">Dismiss this notice.</span>';
+		$html .= '<span class="screen-reader-text">Quick Tag Manager Information Update.</span>';
 		$html .= '</button>';
 		$html .= '</div>';
 

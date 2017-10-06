@@ -7,15 +7,23 @@
  * @since   1.0.0
  * @see     wp-quick-tag-manager-admin-db.php
  */
-class Posted_Display_Admin_List {
+class Quick_Tag_Manager_Admin_List {
 
 	/**
-	 * Variable definition.
+	 * Variable definition Text Domain.
 	 *
 	 * @version 1.0.0
 	 * @since   1.0.0
 	 */
 	private $text_domain;
+
+	/**
+	 * Variable definition Key Name.
+	 *
+	 * @version 1.0.0
+	 * @since   1.0.0
+	 */
+	private $key_name = 'quick_tag_manager_id';
 
 	/**
 	 * Constructor Define.
@@ -31,8 +39,8 @@ class Posted_Display_Admin_List {
 		$mode = "";
 
 		if ( isset( $_GET['mode'] ) && $_GET['mode'] === 'delete' ) {
-			if ( isset( $_GET['quick_tag_manager_id'] ) && is_numeric( $_GET['quick_tag_manager_id'] ) ) {
-				$db->delete_options( $_GET['quick_tag_manager_id'] );
+			if ( isset( $_GET[$this->key_name] ) && is_numeric( $_GET[$this->key_name] ) ) {
+				$db->delete_options( $_GET[$this->key_name] );
 				$mode = "delete";
 			}
 		}
@@ -64,7 +72,7 @@ class Posted_Display_Admin_List {
 		}
 
 		$html  = '<hr>';
-		$html .= '<table class="wp-list-table widefat fixed striped posts">';
+		$html .= '<table class="wp-list-table widefat fixed striped posts quick-tag-manager-table-list">';
 		$html .= '<tr>';
 		$html .= '<th scope="row">' . esc_html__( 'Status',       $this->text_domain ) . '</th>';
 		$html .= '<th scope="row">' . esc_html__( 'ID',           $this->text_domain ) . '</th>';
@@ -84,16 +92,19 @@ class Posted_Display_Admin_List {
 		if ( $results ) {
 			foreach ( $results as $row ) {
 				$html  = '';
-				$html .= '<tr>';
 				if ( $row->activate === 'on' ) {
-					$html .= '<td>Enabled</td>';
+					$html .= '<tr class="active"><td><span>Enabled</span></td>';
 				} else {
-					$html .= '<td>Disabled</td>';
+					$html .= '<tr class="stop"><td><span>Disabled</span></td>';
 				}
-				$html .= '<td>' . esc_html( $row->html_id )    . '</td>';
+				$html .= '<td>';
+				$html .= '<a href="' . $post_url . '&quick_tag_manager_id=' . esc_html( $row->id ) . '">';
+				$html .= esc_html( $row->html_id );
+				$html .= '</a>&nbsp;&nbsp;&nbsp;&nbsp;';
+				$html .= '</td>';
 				$html .= '<td>' . esc_html( $row->display )    . '</td>';
-				$html .= '<td>' . esc_html( $row->args1 )      . '</td>';
-				$html .= '<td>' . esc_html( $row->args2 )      . '</td>';
+				$html .= '<td>' . esc_html( $row->arg1 )       . '</td>';
+				$html .= '<td>' . esc_html( $row->arg2 )       . '</td>';
 				$html .= '<td>' . esc_html( $row->access_key ) . '</td>';
 				$html .= '<td>' . esc_html( $row->title )      . '</td>';
 				$html .= '<td>' . esc_html( $row->priority )   . '</td>';
@@ -127,7 +138,7 @@ class Posted_Display_Admin_List {
 		$html  = '<div id="message" class="updated notice notice-success is-dismissible below-h2">';
 		$html .= '<p>Deletion succeeds.</p>';
 		$html .= '<button type="button" class="notice-dismiss">';
-		$html .= '<span class="screen-reader-text">Dismiss this notice.</span>';
+		$html .= '<span class="screen-reader-text">Deletion succeeds.</span>';
 		$html .= '</button>';
 		$html .= '</div>';
 

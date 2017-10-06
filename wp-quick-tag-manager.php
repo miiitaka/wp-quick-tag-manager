@@ -53,6 +53,7 @@ class Quick_Tag_Manager {
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 			add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 			add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'plugin_action_links' ) );
+			add_action( 'admin_print_footer_scripts', array( $this, 'add_quick_tags' ) );
 		}
 	}
 
@@ -167,5 +168,49 @@ class Quick_Tag_Manager {
 	public function post_page_render () {
 		require_once( plugin_dir_path( __FILE__ ) . 'includes/wp-quick-tag-manager-admin-post.php' );
 		new Quick_Tag_Manager_Admin_Post( $this->text_domain );
+	}
+
+	/**
+	 * Add Quick Tag.
+	 *
+	 * @version 1.0.0
+	 * @since   1.0.0
+	 */
+	public function add_quick_tags () {
+		if ( wp_script_is( 'quicktags' ) ) {
+			$db      = new Quick_Tag_Manager_Admin_Db();
+			$results = $db->get_list_options( 'on' );
+
+			$html  = '';
+			$count = count( $results );
+
+			if ( $count > 0 ) {
+				echo '<script>';
+
+				foreach ( $results as $row ) {
+					$html  = 'QTags.addButton(';
+					$html .= "'";
+					$html .= isset( $row->html_id ) ? $row->html_id : '';
+					$html .= "','";
+					$html .= isset( $row->display ) ? $row->display : '';
+					$html .= "','";
+					$html .= isset( $row->arg1 ) ? $row->arg1 : '';
+					$html .= "','";
+					$html .= isset( $row->arg2 ) ? $row->arg2 : '';
+					$html .= "','";
+					$html .= isset( $row->access_key ) ? $row->access_key : '';
+					$html .= "','";
+					$html .= isset( $row->title ) ? $row->title : '';
+					$html .= "','";
+					$html .= isset( $row->priority ) ? $row->priority : '';
+					$html .= "','";
+					$html .= isset( $row->instance ) ? $row->instance : '';
+					$html .= "');";
+					echo $html;
+				}
+
+				echo '</script>';
+			}
+		}
 	}
 }
