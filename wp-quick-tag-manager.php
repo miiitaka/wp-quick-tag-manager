@@ -180,37 +180,63 @@ class Quick_Tag_Manager {
 		if ( wp_script_is( 'quicktags' ) ) {
 			$db      = new Quick_Tag_Manager_Admin_Db();
 			$results = $db->get_list_options( 'on' );
-
-			$html  = '';
-			$count = count( $results );
+			$count   = count( $results );
 
 			if ( $count > 0 ) {
 				echo '<script>';
 
 				foreach ( $results as $row ) {
 					$html  = 'QTags.addButton(';
-					$html .= "'";
+					$html .= '"';
 					$html .= isset( $row->html_id ) ? $row->html_id : '';
-					$html .= "','";
+					$html .= '","';
 					$html .= isset( $row->display ) ? $row->display : '';
-					$html .= "','";
-					$html .= isset( $row->arg1 ) ? $row->arg1 : '';
-					$html .= "','";
-					$html .= isset( $row->arg2 ) ? $row->arg2 : '';
-					$html .= "','";
+					$html .= '",';
+					echo $html;
+
+					$this->replace_line_break( $row->arg1 );
+					$this->replace_line_break( $row->arg2 );
+
+					$html  = '"';
 					$html .= isset( $row->access_key ) ? $row->access_key : '';
-					$html .= "','";
+					$html .= '","';
 					$html .= isset( $row->title ) ? $row->title : '';
-					$html .= "','";
+					$html .= '","';
 					$html .= isset( $row->priority ) ? $row->priority : '';
-					$html .= "','";
+					$html .= '","';
 					$html .= isset( $row->instance ) ? $row->instance : '';
-					$html .= "');";
+					$html .= '");';
 					echo $html;
 				}
 
 				echo '</script>';
 			}
 		}
+	}
+
+	/**
+	 * Line break code replace.
+	 *
+	 * @version 1.0.0
+	 * @since   1.0.0
+	 * @param   string $param
+	 */
+	private function replace_line_break ( $param ) {
+		if ( isset( $param ) ) {
+			$param = preg_replace( '/\r\n|\r|\n/', '\n', $param );
+			$args  = explode( '\n', $param );
+			$count = count( $args );
+
+			for ( $i = 0; $i < $count; $i ++ ) {
+				echo '"' . $args[ $i ] . '"';
+
+				if ( $i < $count - 1 ) {
+					echo ' + "\n" + ';
+				}
+			}
+		} else {
+			echo '""';
+		}
+		echo ',';
 	}
 }
