@@ -103,8 +103,8 @@ class Quick_Tag_Manager_Admin_List {
 				$html .= '</a>&nbsp;&nbsp;&nbsp;&nbsp;';
 				$html .= '</td>';
 				$html .= '<td>' . esc_html( $row->display )    . '</td>';
-				$html .= '<td>' . esc_html( $row->arg1 )       . '</td>';
-				$html .= '<td>' . esc_html( $row->arg2 )       . '</td>';
+				$html .= '<td>' . esc_html( stripslashes( $row->arg1 ) ) . '</td>';
+				$html .= '<td>' . esc_html( stripslashes( $row->arg2 ) ) . '</td>';
 				$html .= '<td>' . esc_html( $row->access_key ) . '</td>';
 				$html .= '<td>' . esc_html( $row->title )      . '</td>';
 				$html .= '<td>' . esc_html( $row->priority )   . '</td>';

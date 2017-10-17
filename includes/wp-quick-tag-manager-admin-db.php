@@ -114,8 +114,8 @@ class Quick_Tag_Manager_Admin_Db {
 		$data = array(
 			'html_id'       => $post['html_id'],
 			'display'       => $post['display'],
-			'arg1'          => $post['arg1'],
-			'arg2'          => $post['arg2'],
+			'arg1'          => $this->delete_script( $post['arg1'] ),
+			'arg2'          => $this->delete_script( $post['arg2'] ),
 			'access_key'    => $post['access_key'],
 			'title'         => $post['title'],
 			'priority'      => $post['priority'],
@@ -155,8 +155,8 @@ class Quick_Tag_Manager_Admin_Db {
 		$data = array(
 			'html_id'       => $post['html_id'],
 			'display'       => $post['display'],
-			'arg1'          => $post['arg1'],
-			'arg2'          => $post['arg2'],
+			'arg1'          => $this->delete_script( $post['arg1'] ),
+			'arg2'          => $this->delete_script( $post['arg2'] ),
 			'access_key'    => $post['access_key'],
 			'title'         => $post['title'],
 			'priority'      => $post['priority'],
@@ -196,5 +196,19 @@ class Quick_Tag_Manager_Admin_Db {
 		$key_prepared = array( '%d' );
 
 		$wpdb->delete( $this->table_name, $key, $key_prepared );
+	}
+
+	/**
+	 * Delete script tag.
+	 *
+	 * @version 1.0.0
+	 * @since   1.0.0
+	 * @param   string $param
+	 * @return  string $param
+	 */
+	private function delete_script ( $param ) {
+		$param = preg_replace('!<script.*?>.*?</script.*?>!is', '', $param );
+		$param = preg_replace('!onerror=".*?"!is', '', $param );
+		return (string) $param;
 	}
 }
