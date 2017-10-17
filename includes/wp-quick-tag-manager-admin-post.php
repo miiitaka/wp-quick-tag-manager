@@ -144,11 +144,11 @@ class Quick_Tag_Manager_Admin_Post {
 		$html .= '</td></tr>';
 
 		$html .= '<tr><th class="require"><label for="arg1">' . esc_html__( 'Starting Tag', $this->text_domain ) . ':</label></th><td>';
-		$html .= '<textarea name="arg1" id="arg1" rows="10" cols="50" class="large-text code" maxlength="1000" required>' . $options['arg1'] . '</textarea>';
+		$html .= '<textarea name="arg1" id="arg1" rows="10" cols="50" class="large-text code" maxlength="1000" required>' . stripslashes( $options['arg1'] ) . '</textarea>';
 		$html .= '</td></tr>';
 
 		$html .= '<tr><th><label for="arg2">' . esc_html__( 'Ending Tag', $this->text_domain ) . ':</label></th><td>';
-		$html .= '<textarea name="arg2" id="arg2" rows="10" cols="50" class="large-text code" maxlength="1000">' . $options['arg2'] . '</textarea>';
+		$html .= '<textarea name="arg2" id="arg2" rows="10" cols="50" class="large-text code" maxlength="1000">' . stripslashes( $options['arg2'] ) . '</textarea>';
 		$html .= '</td></tr>';
 
 		$html .= '<tr><th><label for="access_key">' . esc_html__( 'Access key', $this->text_domain ) . ':</label></th><td>';
