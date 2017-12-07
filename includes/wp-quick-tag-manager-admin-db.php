@@ -53,6 +53,7 @@ class Quick_Tag_Manager_Admin_Db {
 			$query .= ",priority int";
 			$query .= ",instance text";
 			$query .= ",activate tinytext";
+			$query .= ",note text";
 			$query .= ",register_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL";
 			$query .= ",update_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL";
 			$query .= ",UNIQUE KEY id (id)) " . $charset_collate;
@@ -121,6 +122,7 @@ class Quick_Tag_Manager_Admin_Db {
 			'priority'      => $post['priority'],
 			'instance'      => $post['instance'],
 			'activate'      => isset( $post['activate'] ) ? $post['activate'] : '',
+			'note'          => $post['note'],
 			'register_date' => date( 'Y-m-d H:i:s' ),
 			'update_date'   => date( 'Y-m-d H:i:s' )
 		);
@@ -162,6 +164,7 @@ class Quick_Tag_Manager_Admin_Db {
 			'priority'      => $post['priority'],
 			'instance'      => $post['instance'],
 			'activate'      => isset( $post['activate'] ) ? $post['activate'] : '',
+			'note'          => $post['note'],
 			'update_date'   => date( 'Y-m-d H:i:s' )
 		);
 		$key = array( 'id' => esc_html( $post['quick_tag_manager_id'] ) );
