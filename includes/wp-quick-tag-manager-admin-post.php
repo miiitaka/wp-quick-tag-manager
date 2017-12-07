@@ -67,7 +67,8 @@ class Quick_Tag_Manager_Admin_Post {
 			'title'      => '',
 			'priority'   => '',
 			'instance'   => '',
-			'activate'   => 'on'
+			'activate'   => 'on',
+			'note'       => ''
 		);
 
 		/** Key Set */
@@ -169,6 +170,11 @@ class Quick_Tag_Manager_Admin_Post {
 		$html .= '<tr><th><label for="instance">' . esc_html__( 'Instance', $this->text_domain ) . ':</label></th><td>';
 		$html .= '<input type="text" name="instance" id="instance" class="regular-text" maxlength="100" value="';
 		$html .= esc_attr( $options['instance'] ) . '">';
+		$html .= '</td></tr>';
+
+		$html .= '<tr><th><label for="note">' . esc_html__( 'Note', $this->text_domain ) . ':</label></th><td>';
+		$html .= '<input type="text" name="note" id="note" class="regular-text" maxlength="100" value="';
+		$html .= esc_attr( $options['note'] ) . '">';
 		$html .= '</td></tr>';
 
 		$html .= '</table>';

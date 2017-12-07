@@ -24,7 +24,7 @@ new Quick_Tag_Manager();
 class Quick_Tag_Manager {
 
 	/**
-	 * Variable definition.
+	 * Variable definition Text Domain.
 	 *
 	 * @version 1.0.0
 	 * @since   1.0.0
@@ -32,7 +32,7 @@ class Quick_Tag_Manager {
 	private $text_domain = 'wp-quick-tag-manager';
 
 	/**
-	 * Variable definition.
+	 * Variable definition version.
 	 *
 	 * @version 1.0.0
 	 * @since   1.0.0
